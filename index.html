@@ -19,50 +19,34 @@
             backdrop-filter: blur(20px);
             border-radius: 25px;
             padding: 40px;
-            width: 380px;
+            width: 420px;
             color: white;
             box-shadow: 0 25px 45px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.2);
         }
-        .search {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
+        h2 { text-align: center; margin-bottom: 25px; font-size: 22px; opacity: 0.9; }
+        .search { display: flex; gap: 10px; margin-bottom: 25px; }
         .search input {
-            flex: 1;
-            padding: 12px 18px;
-            border-radius: 50px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            font-size: 15px;
-            outline: none;
+            flex: 1; padding: 12px 18px; border-radius: 50px;
+            border: none; background: rgba(255,255,255,0.2);
+            color: white; font-size: 15px; outline: none;
         }
         .search input::placeholder { color: rgba(255,255,255,0.6); }
         .search button {
-            padding: 12px 20px;
-            border-radius: 50px;
-            border: none;
-            background: #e94560;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
+            padding: 12px 20px; border-radius: 50px; border: none;
+            background: #e94560; color: white; font-size: 18px; cursor: pointer;
         }
+        .search button:hover { background: #c73652; }
+        .loading { text-align: center; padding: 20px; opacity: 0.7; font-size: 16px; }
+        .error { text-align: center; padding: 15px; color: #ff6b6b; font-size: 15px; }
         .weather-icon { font-size: 80px; text-align: center; margin: 10px 0; }
         .temp { font-size: 64px; font-weight: 700; text-align: center; }
-        .city { font-size: 24px; text-align: center; opacity: 0.9; margin-bottom: 5px; }
+        .city-name { font-size: 26px; text-align: center; opacity: 0.9; margin-bottom: 5px; }
         .desc { text-align: center; opacity: 0.7; margin-bottom: 25px; font-size: 16px; }
-        .details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+        .details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .detail {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
+            background: rgba(255,255,255,0.1); border-radius: 15px;
+            padding: 15px; text-align: center;
         }
         .detail-val { font-size: 22px; font-weight: 700; }
         .detail-label { font-size: 12px; opacity: 0.7; margin-top: 4px; }
@@ -71,61 +55,72 @@
 </head>
 <body>
     <div class="app">
+        <h2>🌍 Live World Weather</h2>
         <div class="search">
-            <input type="text" id="cityInput" placeholder="Enter city..." value="Sydney"/>
-            <button onclick="getWeather()">🔍</button>
+            <input type="text" id="cityInput" placeholder="Enter any city..." />
+            <button onclick="searchWeather()">🔍</button>
         </div>
-        <div id="weatherDisplay">
-            <div class="weather-icon">🌤️</div>
-            <div class="temp">22°C</div>
-            <div class="city">Sydney</div>
-            <div class="desc">Partly Cloudy</div>
-            <div class="details">
-                <div class="detail">
-                    <div class="detail-val">65%</div>
-                    <div class="detail-label">Humidity</div>
-                </div>
-                <div class="detail">
-                    <div class="detail-val">14 km/h</div>
-                    <div class="detail-label">Wind Speed</div>
-                </div>
-                <div class="detail">
-                    <div class="detail-val">1013 hPa</div>
-                    <div class="detail-label">Pressure</div>
-                </div>
-                <div class="detail">
-                    <div class="detail-val">18°C</div>
-                    <div class="detail-label">Feels Like</div>
-                </div>
-            </div>
-        </div>
-        <div class="footer">Deployed via Terraform + GitHub Actions + AWS S3</div>
+        <div id="result"><div class="loading">Enter a city to get live weather ☁️</div></div>
+        <div class="footer">Live data via Open-Meteo API · Deployed with Terraform + GitHub Actions + AWS S3</div>
     </div>
 
     <script>
-        const weatherData = {
-            sydney: { icon: '🌤️', temp: 22, desc: 'Partly Cloudy', humidity: 65, wind: 14, pressure: 1013, feels: 18 },
-            london: { icon: '🌧️', temp: 12, desc: 'Rainy', humidity: 82, wind: 20, pressure: 1008, feels: 9 },
-            tokyo: { icon: '⛅', temp: 18, desc: 'Overcast', humidity: 70, wind: 10, pressure: 1015, feels: 16 },
-            paris: { icon: '🌥️', temp: 15, desc: 'Cloudy', humidity: 75, wind: 16, pressure: 1011, feels: 13 },
-            dubai: { icon: '☀️', temp: 38, desc: 'Sunny', humidity: 40, wind: 8, pressure: 1005, feels: 42 },
-            newyork: { icon: '🌦️', temp: 20, desc: 'Light Rain', humidity: 72, wind: 18, pressure: 1010, feels: 17 },
+        const weatherCodes = {
+            0: ['☀️','Clear Sky'], 1: ['🌤️','Mainly Clear'], 2: ['⛅','Partly Cloudy'],
+            3: ['☁️','Overcast'], 45: ['🌫️','Foggy'], 48: ['🌫️','Icy Fog'],
+            51: ['🌦️','Light Drizzle'], 53: ['🌦️','Drizzle'], 55: ['🌧️','Heavy Drizzle'],
+            61: ['🌧️','Light Rain'], 63: ['🌧️','Rain'], 65: ['🌧️','Heavy Rain'],
+            71: ['🌨️','Light Snow'], 73: ['❄️','Snow'], 75: ['❄️','Heavy Snow'],
+            80: ['🌦️','Rain Showers'], 81: ['🌧️','Heavy Showers'], 82: ['⛈️','Violent Showers'],
+            95: ['⛈️','Thunderstorm'], 96: ['⛈️','Thunderstorm & Hail'], 99: ['⛈️','Heavy Thunderstorm']
         };
 
-        function getWeather() {
-            const city = document.getElementById('cityInput').value.toLowerCase().replace(/\s/g, '');
-            const data = weatherData[city] || { icon: '🌍', temp: '??', desc: 'City not found — try Sydney, London, Tokyo, Paris, Dubai, New York', humidity: '--', wind: '--', pressure: '--', feels: '--' };
-            document.getElementById('weatherDisplay').innerHTML = `
-                <div class="weather-icon">${data.icon}</div>
-                <div class="temp">${data.temp}${data.temp !== '??' ? '°C' : ''}</div>
-                <div class="city">${document.getElementById('cityInput').value}</div>
-                <div class="desc">${data.desc}</div>
-                <div class="details">
-                    <div class="detail"><div class="detail-val">${data.humidity}${data.humidity !== '--' ? '%' : ''}</div><div class="detail-label">Humidity</div></div>
-                    <div class="detail"><div class="detail-val">${data.wind}${data.wind !== '--' ? ' km/h' : ''}</div><div class="detail-label">Wind Speed</div></div>
-                    <div class="detail"><div class="detail-val">${data.pressure}${data.pressure !== '--' ? ' hPa' : ''}</div><div class="detail-label">Pressure</div></div>
-                    <div class="detail"><div class="detail-val">${data.feels}${data.feels !== '--' ? '°C' : ''}</div><div class="detail-label">Feels Like</div></div>
-                </div>`;
+        document.getElementById('cityInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') searchWeather();
+        });
+
+        async function searchWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) return;
+            document.getElementById('result').innerHTML = '<div class="loading">🔍 Searching...</div>';
+            try {
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+                const geoData = await geoRes.json();
+                if (!geoData.results || geoData.results.length === 0) {
+                    document.getElementById('result').innerHTML = '<div class="error">❌ City not found. Try another name.</div>';
+                    return;
+                }
+                const { latitude, longitude, name, country } = geoData.results[0];
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&wind_speed_unit=kmh`);
+                const weatherData = await weatherRes.json();
+                const c = weatherData.current;
+                const [icon, desc] = weatherCodes[c.weather_code] || ['🌡️', 'Unknown'];
+                document.getElementById('result').innerHTML = `
+                    <div class="weather-icon">${icon}</div>
+                    <div class="temp">${Math.round(c.temperature_2m)}°C</div>
+                    <div class="city-name">${name}, ${country}</div>
+                    <div class="desc">${desc}</div>
+                    <div class="details">
+                        <div class="detail">
+                            <div class="detail-val">${c.relative_humidity_2m}%</div>
+                            <div class="detail-label">Humidity</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-val">${Math.round(c.wind_speed_10m)} km/h</div>
+                            <div class="detail-label">Wind Speed</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-val">${Math.round(c.surface_pressure)} hPa</div>
+                            <div class="detail-label">Pressure</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-val">${Math.round(c.apparent_temperature)}°C</div>
+                            <div class="detail-label">Feels Like</div>
+                        </div>
+                    </div>`;
+            } catch (err) {
+                document.getElementById('result').innerHTML = '<div class="error">❌ Error fetching weather. Please try again.</div>';
+            }
         }
     </script>
 </body>
