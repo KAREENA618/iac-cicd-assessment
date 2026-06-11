@@ -3,123 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kareena | Cloud Assessment 2026</title>
+    <title>Weather App | Kareena Antonio</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 50px 60px;
-            max-width: 700px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        .app {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            width: 380px;
+            color: white;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .search input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .search input::placeholder { color: rgba(255,255,255,0.6); }
+        .search button {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            background: #e94560;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .weather-icon { font-size: 80px; text-align: center; margin: 10px 0; }
+        .temp { font-size: 64px; font-weight: 700; text-align: center; }
+        .city { font-size: 24px; text-align: center; opacity: 0.9; margin-bottom: 5px; }
+        .desc { text-align: center; opacity: 0.7; margin-bottom: 25px; font-size: 16px; }
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .detail {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
             text-align: center;
         }
-        .badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            display: inline-block;
-            margin-bottom: 25px;
-        }
-        h1 {
-            font-size: 2.5em;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #718096;
-            font-size: 1.1em;
-            margin-bottom: 35px;
-        }
-        .pipeline {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-        }
-        .step {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        .arrow { color: #667eea; font-size: 20px; font-weight: bold; }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 35px;
-        }
-        .stat {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 12px;
-            padding: 20px 10px;
-            color: white;
-        }
-        .stat-number { font-size: 2em; font-weight: 700; }
-        .stat-label { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-        .footer {
-            color: #a0aec0;
-            font-size: 13px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }
-        .live { color: #48bb78; font-weight: 700; }
+        .detail-val { font-size: 22px; font-weight: 700; }
+        .detail-label { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+        .footer { text-align: center; margin-top: 25px; font-size: 11px; opacity: 0.5; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="badge">🚀 LIVE ON AWS</div>
-        <h1>Cloud Deployment</h1>
-        <p class="subtitle">Automated CI/CD Pipeline — ACU Assessment 2026</p>
-
-        <div class="pipeline">
-            <div class="step">📝 GitHub Push</div>
-            <div class="arrow">→</div>
-            <div class="step">⚙️ GitHub Actions</div>
-            <div class="arrow">→</div>
-            <div class="step">🏗️ Terraform</div>
-            <div class="arrow">→</div>
-            <div class="step">☁️ AWS S3</div>
+    <div class="app">
+        <div class="search">
+            <input type="text" id="cityInput" placeholder="Enter city..." value="Sydney"/>
+            <button onclick="getWeather()">🔍</button>
         </div>
-
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number">4</div>
-                <div class="stat-label">Files Deployed</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">~20s</div>
-                <div class="stat-label">Deploy Time</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">100%</div>
-                <div class="stat-label">Automated</div>
+        <div id="weatherDisplay">
+            <div class="weather-icon">🌤️</div>
+            <div class="temp">22°C</div>
+            <div class="city">Sydney</div>
+            <div class="desc">Partly Cloudy</div>
+            <div class="details">
+                <div class="detail">
+                    <div class="detail-val">65%</div>
+                    <div class="detail-label">Humidity</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-val">14 km/h</div>
+                    <div class="detail-label">Wind Speed</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-val">1013 hPa</div>
+                    <div class="detail-label">Pressure</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-val">18°C</div>
+                    <div class="detail-label">Feels Like</div>
+                </div>
             </div>
         </div>
-
-        <div class="footer">
-            Built by <strong>Kareena</strong> | Student ID: KAREENA618<br>
-            Status: <span class="live">● LIVE</span> | Hosted on AWS S3 | Provisioned with Terraform
-        </div>
+        <div class="footer">Deployed via Terraform + GitHub Actions + AWS S3</div>
     </div>
+
+    <script>
+        const weatherData = {
+            sydney: { icon: '🌤️', temp: 22, desc: 'Partly Cloudy', humidity: 65, wind: 14, pressure: 1013, feels: 18 },
+            london: { icon: '🌧️', temp: 12, desc: 'Rainy', humidity: 82, wind: 20, pressure: 1008, feels: 9 },
+            tokyo: { icon: '⛅', temp: 18, desc: 'Overcast', humidity: 70, wind: 10, pressure: 1015, feels: 16 },
+            paris: { icon: '🌥️', temp: 15, desc: 'Cloudy', humidity: 75, wind: 16, pressure: 1011, feels: 13 },
+            dubai: { icon: '☀️', temp: 38, desc: 'Sunny', humidity: 40, wind: 8, pressure: 1005, feels: 42 },
+            newyork: { icon: '🌦️', temp: 20, desc: 'Light Rain', humidity: 72, wind: 18, pressure: 1010, feels: 17 },
+        };
+
+        function getWeather() {
+            const city = document.getElementById('cityInput').value.toLowerCase().replace(/\s/g, '');
+            const data = weatherData[city] || { icon: '🌍', temp: '??', desc: 'City not found — try Sydney, London, Tokyo, Paris, Dubai, New York', humidity: '--', wind: '--', pressure: '--', feels: '--' };
+            document.getElementById('weatherDisplay').innerHTML = `
+                <div class="weather-icon">${data.icon}</div>
+                <div class="temp">${data.temp}${data.temp !== '??' ? '°C' : ''}</div>
+                <div class="city">${document.getElementById('cityInput').value}</div>
+                <div class="desc">${data.desc}</div>
+                <div class="details">
+                    <div class="detail"><div class="detail-val">${data.humidity}${data.humidity !== '--' ? '%' : ''}</div><div class="detail-label">Humidity</div></div>
+                    <div class="detail"><div class="detail-val">${data.wind}${data.wind !== '--' ? ' km/h' : ''}</div><div class="detail-label">Wind Speed</div></div>
+                    <div class="detail"><div class="detail-val">${data.pressure}${data.pressure !== '--' ? ' hPa' : ''}</div><div class="detail-label">Pressure</div></div>
+                    <div class="detail"><div class="detail-val">${data.feels}${data.feels !== '--' ? '°C' : ''}</div><div class="detail-label">Feels Like</div></div>
+                </div>`;
+        }
+    </script>
 </body>
 </html>
