@@ -11,6 +11,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
+import {
+  to = aws_s3_bucket.website
+  id = "kareena-cicd-assessment-2026-v2"
+}
+
 resource "aws_s3_bucket" "website" {
   bucket = "kareena-cicd-assessment-2026-v2"
 }
