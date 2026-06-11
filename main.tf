@@ -12,12 +12,11 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "website" {
-  bucket = "kareena-cicd-assessment-2026"
+  bucket = "kareena-cicd-assessment-2026-v2"
 }
 
 resource "aws_s3_bucket_website_configuration" "website" {
   bucket = aws_s3_bucket.website.id
-
   index_document {
     suffix = "index.html"
   }
@@ -25,7 +24,6 @@ resource "aws_s3_bucket_website_configuration" "website" {
 
 resource "aws_s3_bucket_public_access_block" "website" {
   bucket = aws_s3_bucket.website.id
-
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
@@ -35,7 +33,6 @@ resource "aws_s3_bucket_public_access_block" "website" {
 resource "aws_s3_bucket_policy" "website" {
   bucket = aws_s3_bucket.website.id
   depends_on = [aws_s3_bucket_public_access_block.website]
-
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
